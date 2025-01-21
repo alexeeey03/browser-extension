@@ -1,2 +1,3 @@
 .vscode/
 *.fig
+node_modules/
