@@ -6,6 +6,9 @@
 		"webpack-cli": "^6.0.1"
 	},
 	"scripts": {
-		"build:dev": "webpack --config webpack.config.js"
+		"build:dev": "webpack --config webpack.config.js",
+		"test:unit": "node testing/unit/example.js",
+		"test:e2e": "node testing/e2e/example.js",
+		"test": "npm run test:unit && npm run test:e2e"
 	}
 }
