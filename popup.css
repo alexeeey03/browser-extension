@@ -1,0 +1,126 @@
+/* General Styles */
+body {
+	font-family: Arial, sans-serif;
+	margin: 0;
+	padding: 20px;
+	width: 300px;
+	background: linear-gradient(to bottom, #f0f4f8, #d9e6f2);
+	color: #333;
+}
+
+h1 {
+	text-align: center;
+	color: #4a90e2;
+	margin-bottom: 20px;
+}
+
+p {
+	font-size: 14px;
+	color: #555;
+	margin: 10px 0;
+}
+
+/* Input Field */
+#nameInput {
+	display: block;
+	width: 100%;
+	max-width: 300px;
+	margin: 0 auto 20px;
+	padding: 5px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	font-size: 14px;
+}
+
+/* Color Picker */
+.color_picker {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+	margin-bottom: 20px;
+}
+
+.color_preview {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	cursor: pointer;
+	transition: transform 0.3s;
+	border: 2px solid transparent;
+}
+
+.color_preview[data-color='blue'] {
+	background-color: #0d2562;
+}
+
+.color_preview[data-color='black'] {
+	background-color: #000000;
+}
+
+.color_preview[data-color='red'] {
+	background-color: #ab0909;
+}
+
+.color_preview[data-color='green'] {
+	background-color: #0d742c;
+}
+
+.color_preview.active {
+	scale: 1.2;
+}
+
+.color_preview:hover {
+	transform: scale(1.1);
+	border: 2px solid #4a90e2;
+}
+
+/* Buttons */
+button {
+	display: inline-block;
+	background-color: #4a90e2;
+	color: #fff;
+	padding: 10px 20px;
+	font-size: 14px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+button:hover {
+	background-color: #357ab8;
+}
+
+#downloadButton {
+	margin-left: 10px;
+}
+
+/* Loader */
+.loader {
+	text-align: center;
+	font-size: 14px;
+	color: #4a90e2;
+	margin: 20px 0;
+}
+
+/* Result Section */
+#result {
+	text-align: center;
+	margin-top: 20px;
+}
+
+.flex_row {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+}
+
+#certificateLink {
+	color: #4a90e2;
+	text-decoration: none;
+}
+
+#certificateLink:hover {
+	text-decoration: underline;
+}
