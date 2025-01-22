@@ -21,7 +21,7 @@ export async function getLoginUserName(activeTab) {
 
 	const nameElement = dom.querySelector('#portfolio-user-name') // ищем имя login пользователя
 
-	if (!nameElement) {
+	if (!nameElement || !nameElement.childNodes[0].textContent.trim()) {
 		return { userError: 'User name not found' }
 	}
 

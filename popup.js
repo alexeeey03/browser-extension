@@ -54,17 +54,17 @@ async function generatePDF() {
 		res.arrayBuffer()
 	)
 	const pdfDoc = await PDFDocument.load(existingPdfBytes) // загружаем PDF документ из ArrayBuffer
+	const page = pdfDoc.getPages()[0] // получаем первую страницу документа
 
 	const certificateColors = {
 		black: '#000000',
 		blue: '#0d2562',
 		red: '#ab0909',
 		green: '#0d742c',
-	}
+	} // цвета сертификата
 
-	const page = pdfDoc.getPages()[0] // получаем первую страницу документа
-
-	const textColor = hexToRgb(certificateColors[selectedColor]) // цвет текста в зависимости от цвета сертификата
+	const { r, g, b } = hexToRgb(certificateColors[selectedColor]) // конвертируем выбранный цвет из hex в RGB
+	const textColor = PDFLib.rgb(r, g, b) // передаем цвет в библиотеку
 	const customFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold) // загружаем шрифт из шрифтов PDFLib
 	const width = 1123 // ширина страницы сертификата
 

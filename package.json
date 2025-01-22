@@ -2,12 +2,16 @@
 	"name": "chrome-extension",
 	"version": "2.0",
 	"devDependencies": {
+		"@babel/preset-env": "^7.26.0",
+		"babel-jest": "^29.7.0",
+		"jest": "^29.7.0",
+		"jest-environment-jsdom": "^29.7.0",
 		"webpack": "^5.97.1",
 		"webpack-cli": "^6.0.1"
 	},
 	"scripts": {
 		"build:dev": "webpack --config webpack.config.js",
-		"test:unit": "node testing/unit/example.js",
+		"test:unit": "jest --coverage",
 		"test:e2e": "node testing/e2e/example.js",
 		"test": "npm run test:unit && npm run test:e2e",
 		"lint": "npx oxlint ."
@@ -15,5 +19,10 @@
 	"type": "module",
 	"dependencies": {
 		"oxlint": "^0.15.7"
+	},
+	"babel": {
+		"presets": [
+			"@babel/preset-env"
+		]
 	}
 }
