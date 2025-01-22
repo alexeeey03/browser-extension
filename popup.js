@@ -1,7 +1,7 @@
 import { checkErrors } from './functions/checkErrors.js'
 import { customDrawImage } from './functions/customDrawImage.js'
 import { customDrawText } from './functions/customDrawText.js'
-import { generateQrCode } from './functions/generateQRCode.js'
+import { generateQrCode } from './functions/generateQrCode.js'
 import { getCurrentDate } from './functions/getCurrentDate.js'
 import { getLoginUserName } from './functions/getLoginUserName.js'
 import { hexToRgb } from './functions/hexToRgb.js'
