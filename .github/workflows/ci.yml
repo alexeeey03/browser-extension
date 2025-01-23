@@ -2,9 +2,7 @@ name: CI Pipeline
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on:
   push:
-    branches: [dev, master]
-  pull_request:
-    branches: [master]
+    branches: [dev]
 jobs:
   testing:
     name: Testing
@@ -21,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build project with Webpack
+      - name: Build js with Webpack
         run: npm run build:dev
 
       - name: Run Oxlint
