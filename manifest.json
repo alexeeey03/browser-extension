@@ -1,8 +1,11 @@
 {
 	"name": "Certificate Extension",
 	"description": "Generates certificates in PDF format",
-	"version": "1.0",
+	"version": "2.0",
 	"manifest_version": 3,
+	"content_security_policy": {
+		"extension_pages": "script-src 'self'; object-src 'self';"
+	},
 	"icons": {
 		"16": "public/icons/16.png",
 		"32": "public/icons/32.png",
@@ -13,5 +16,6 @@
 		"default_popup": "popup.html"
 	},
 	"permissions": ["scripting", "activeTab"],
+	"host_permissions": ["https://devpost.com/*"],
 	"background": {}
 }

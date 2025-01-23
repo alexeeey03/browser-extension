@@ -1,16 +1,30 @@
+import * as Sentry from '@sentry/browser'
+import posthog from 'posthog-js'
 import { checkErrors } from './functions/checkErrors.js'
 import { customDrawImage } from './functions/customDrawImage.js'
 import { customDrawText } from './functions/customDrawText.js'
-import { generateQrCode } from './functions/generateQRCode.js'
+import { generateQrCode } from './functions/generateQrCode.js'
 import { getCurrentDate } from './functions/getCurrentDate.js'
+import { getLoginUserName } from './functions/getLoginUserName.js'
 import { hexToRgb } from './functions/hexToRgb.js'
 import { parsePageContent } from './functions/parsePageContent.js'
 import { getSelectedColor, setupColorSelection } from './functions/setupColorSelection.js'
+import { switchInterface } from './functions/switchInterface.js'
+
+posthog.init('phc_pYIs6fE5pTEQrRHEmlrx0l0pjYdBE3sTPXyQlHpaYmQ', {
+	api_host: 'https://us.i.posthog.com',
+})
 
 const { PDFDocument } = PDFLib // получаем доступ к pdf-lib
-
 // эта функция срабатывает при нажатии на кнопку 'Create'
 async function generatePDF() {
+	Sentry.captureMessage('Something went wrong', 'error')
+	try {
+		throw new Error('Something went wrong')
+	} catch (error) {
+		Sentry.captureException(error)
+	}
+
 	const selectedColor = getSelectedColor()
 
 	const [activeTab] = await chrome.tabs.query({
@@ -24,6 +38,9 @@ async function generatePDF() {
 		return
 	}
 
+	// показываем loader на время создания сертификата и скрываем result если он есть
+	switchInterface('openLoader')
+
 	// выполняем парсинг
 	const [result] = await chrome.scripting.executeScript({
 		target: { tabId: activeTab.id },
@@ -31,42 +48,41 @@ async function generatePDF() {
 	})
 
 	const { dateHackathon, titleHackathon, judges } = result.result // деструктуризиация результата
-	const nameInput = document.getElementById('nameInput').value // получаем значение из поля nameInput
+
+	// получаем имя пользователя
+	const { userName, userError } = await getLoginUserName(activeTab)
 
 	// перед началом создания сертификата проверяем введенные данные
-	const error = checkErrors(nameInput, selectedColor, judges)
+	const error = checkErrors(userName, userError, selectedColor, judges)
+
 	if (error) {
 		alert(error)
+		switchInterface('closeLoader')
 		return
 	}
-
-	// показываем loader на время создания сертификата и скрываем result если он есть
-	document.getElementById('result').style.display = 'none'
-	document.getElementById('loader').style.display = 'block'
-	document.getElementById('generateButton').disabled = true
 
 	// загружаем шаблон PDF из папки templates и преобразовываем его в формат ArrayBuffer
 	const existingPdfBytes = await fetch(`public/templates/${selectedColor}.pdf`).then(res =>
 		res.arrayBuffer()
 	)
 	const pdfDoc = await PDFDocument.load(existingPdfBytes) // загружаем PDF документ из ArrayBuffer
+	const page = pdfDoc.getPages()[0] // получаем первую страницу документа
 
 	const certificateColors = {
 		black: '#000000',
 		blue: '#0d2562',
 		red: '#ab0909',
 		green: '#0d742c',
-	}
+	} // цвета сертификата
 
-	const page = pdfDoc.getPages()[0] // получаем первую страницу документа
-
-	const textColor = hexToRgb(certificateColors[selectedColor]) // цвет текста в зависимости от цвета сертификата
+	const { r, g, b } = hexToRgb(certificateColors[selectedColor]) // конвертируем выбранный цвет из hex в RGB
+	const textColor = PDFLib.rgb(r, g, b) // передаем цвет в библиотеку
 	const customFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold) // загружаем шрифт из шрифтов PDFLib
 	const width = 1123 // ширина страницы сертификата
 
 	// ДОБАВЛЯЕМ НА СТРАНИЦУ ШАБЛОНА НУЖНЫЕ ДАННЫЕ
 	// ИМЯ
-	const nameText = nameInput.toUpperCase() // переводим текст в upper case
+	const nameText = userName.toUpperCase() // переводим текст в upper case
 	const nameX = width / 2 - customFont.widthOfTextAtSize(nameText, 72) / 2 // Позиция по оси X
 	customDrawText(page, nameText, nameX, 400, 72, customFont, textColor) // добавляем на страницу
 
@@ -93,7 +109,7 @@ async function generatePDF() {
 	const viewLink = document.getElementById('certificateLink') // создание ссылки для просмотра
 	viewLink.href = pdfUrl
 
-	const formattedName = nameInput.replace(/\s+/g, '_') // форматируем имя для правильного имени файла
+	const formattedName = userName.replace(/\s+/g, '_') // форматируем имя для правильного имени файла
 	const downloadButton = document.getElementById('downloadButton') // создание кнопки для скачивания
 	downloadButton.addEventListener('click', () => {
 		const downloadLink = document.createElement('a') // создаем элемент ссылку
@@ -103,9 +119,8 @@ async function generatePDF() {
 	})
 
 	// скрываем loader и отображаем result
-	document.getElementById('loader').style.display = 'none'
-	document.getElementById('generateButton').disabled = false
-	document.getElementById('result').style.display = 'block'
+	switchInterface('result')
+	posthog.capture('certificate_generated', { certOwner: `${nameText}` })
 }
 
 // добавляем слушатели событий на кнопки 'create' и выбор цвета

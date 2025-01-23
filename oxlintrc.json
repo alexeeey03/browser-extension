@@ -1,0 +1,8 @@
+{
+	"ignorePatterns": ["node_modules/*", "dist/*", "libs/*", ".github/*", "*.config.js"],
+	"rules": {
+		"no-console": "warn",
+		"indent": ["error", 2],
+		"max-len": ["error", { "code": 120 }]
+	}
+}
