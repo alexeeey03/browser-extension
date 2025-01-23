@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/browser'
+import posthog from 'posthog-js'
 import { checkErrors } from './functions/checkErrors.js'
 import { customDrawImage } from './functions/customDrawImage.js'
 import { customDrawText } from './functions/customDrawText.js'
@@ -9,10 +11,20 @@ import { parsePageContent } from './functions/parsePageContent.js'
 import { getSelectedColor, setupColorSelection } from './functions/setupColorSelection.js'
 import { switchInterface } from './functions/switchInterface.js'
 
-const { PDFDocument } = PDFLib // получаем доступ к pdf-lib
+posthog.init('phc_pYIs6fE5pTEQrRHEmlrx0l0pjYdBE3sTPXyQlHpaYmQ', {
+	api_host: 'https://us.i.posthog.com',
+})
 
+const { PDFDocument } = PDFLib // получаем доступ к pdf-lib
 // эта функция срабатывает при нажатии на кнопку 'Create'
 async function generatePDF() {
+	Sentry.captureMessage('Something went wrong', 'error')
+	try {
+		throw new Error('Something went wrong')
+	} catch (error) {
+		Sentry.captureException(error)
+	}
+
 	const selectedColor = getSelectedColor()
 
 	const [activeTab] = await chrome.tabs.query({
@@ -108,6 +120,7 @@ async function generatePDF() {
 
 	// скрываем loader и отображаем result
 	switchInterface('result')
+	posthog.capture('certificate_generated', { certOwner: `${nameText}` })
 }
 
 // добавляем слушатели событий на кнопки 'create' и выбор цвета
